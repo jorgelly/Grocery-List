@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableWithoutFeedback, Alert, Animated, TouchableOpacity } from 'react-native';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 
+import Colors from '../constants/Colors';
+
 const InputItems = (props) => {
   const [isPressed, setIsPressed] = useState(false);
 
@@ -73,7 +75,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 22,
     fontFamily: 'virgil',
-    color: '#4a148c'
+    color: Colors.mainColor
   },
   textIfPressed: {
     fontSize: 18,

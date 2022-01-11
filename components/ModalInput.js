@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, Text, View, Button, TextInput, Modal, KeyboardAvoidingView, Platform, Alert } from 'react-native';
+import { StyleSheet, Text, View, Button, TextInput, Modal, KeyboardAvoidingView, Platform, Alert, Image } from 'react-native';
 import { useDispatch } from 'react-redux';
 // import { Picker } from '@react-native-picker/picker';
 
 import { createGrocery } from '../store/Reducers/GroceryReducer';
+import Colors from '../constants/Colors.js';
 
 const ModalInput = (props) => {
   const [enteredValue, setEnteredValue] = useState('');
@@ -46,9 +47,7 @@ const ModalInput = (props) => {
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.mainContainer}
       >
-        <View style={styles.titleContainer}>
-          <Text style={styles.titleText}>Add Groceries:</Text>
-        </View>
+        <Image style={styles.image} source={require('../assets/groceryTransparent.png')} />
         <TextInput
           style={styles.input}
           placeholder='Enter Grocery'
@@ -64,7 +63,7 @@ const ModalInput = (props) => {
         </View> */}
         <View style={styles.buttonContainer}>
           <View style={styles.button}>
-            <Button title='ADD' onPress={addHandler}/>
+            <Button color={Colors.mainColor} title='ADD' onPress={addHandler}/>
           </View>
           <View style={styles.button}>
             <Button color='red' title='CANCEL' onPress={cancelAction}/>
@@ -84,37 +83,45 @@ const styles = StyleSheet.create({
   },
   input: {
     borderColor: 'black',
-    borderBottomWidth: 1,
+    borderBottomWidth: 2,
     marginBottom: 10,
     padding: 20,
     width: '95%',
     borderRadius: 15,
-    backgroundColor: '#E9E9E9',
+    backgroundColor: 'white',
     fontSize: 22,
-    fontFamily: 'virgil'
+    fontFamily: 'virgil',
+    color: Colors.mainColor,
+    borderRadius: 10,
+    shadowColor: 'black',
+    shadowOpacity: 0.4,
+    shadowOffset: { width: 2, height: 5 },
+    shadowRadius: 5,
   },
   buttonContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '60%'
+    justifyContent: 'space-around',
+    width: '70%'
   },
   button: {
     marginTop: 30,
-    backgroundColor: 'white',
     borderRadius: 10,
     shadowColor: 'black',
-    shadowOpacity: 0.26,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 10,
-    width: '40%'
+    shadowOpacity: 0.4,
+    shadowOffset: { width: 2, height: 5 },
+    shadowRadius: 5,
+    width: '40%',
+    padding: 5
   },
-  titleContainer: {
-    marginBottom: 30
-  },
-  titleText: {
-    fontFamily: 'open-sans-bold',
-    fontSize: 22
-  },
+  image: {
+    height: 200,
+    width: 300,
+    marginBottom: 30,
+    shadowColor: 'black',
+    shadowOpacity: 0.4,
+    shadowOffset: { width: 5, height: 10 },
+    resizeMode: 'center'
+  }
   // pickerContainer: {
   //   flexDirection: 'row',
   //   width: '95%',

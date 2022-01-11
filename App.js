@@ -11,6 +11,7 @@ import AppLoading from 'expo-app-loading';
 import PantryScreen from './screens/PantryScreen';
 import RefrigeratorScreen from './screens/RefrigeratorScreen';
 import GroceryListScreen from './screens/GroceryListScreen';
+import Colors from './constants/Colors';
 
 enableScreens();
 
@@ -49,9 +50,9 @@ export default function App() {
               else iconName = focused ? 'ios-list' : 'ios-list-outline'
               return <Ionicons name={iconName} size={22} color={color} />
             },
-            tabBarActiveTintColor: '#4a148c',
+            tabBarActiveTintColor: Colors.mainColor,
             headerTitleStyle: {
-              color: '#4a148c',
+              color: Colors.mainColor,
               fontFamily: 'open-sans-bold'
             }
           })}

@@ -7,6 +7,7 @@ import ModalInput from '../components/ModalInput';
 import InputItems from '../components/InputItems';
 import { deleteGrocery, getGroceries } from '../store/Reducers/GroceryReducer';
 import CustomHeaderButton from '../components/CustomHeaderButton';
+import Colors from '../constants/Colors';
 
 const GroceryListScreen = (props) => {
   const [isModal, setIsModal] = useState(false);
@@ -66,7 +67,7 @@ const GroceryListScreen = (props) => {
     return (
       <View style={styles.loadingOrError}>
         <Text>Something went wrong! But don't worry, it's me not you.</Text>
-        <Button title='Try Again' color='#4a148c' onPress={getItems} />
+        <Button title='Try Again' color={Colors.mainColor} onPress={getItems} />
       </View>
     );
   };
@@ -74,7 +75,7 @@ const GroceryListScreen = (props) => {
   if (isLoading) {
     return (
       <View style={styles.loadingOrError}>
-        <ActivityIndicator size='large' color='#4a148c' />
+        <ActivityIndicator size='large' color={Colors.mainColor} />
       </View>
     );
   };
