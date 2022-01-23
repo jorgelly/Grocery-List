@@ -38,7 +38,7 @@ export const getGroceries = () => {
       };
       dispatch(setGroceries(data));
     } catch (error) {
-      console.log('getGroceries Error!!', error);
+      console.log('!!Get Groceries Error!!', error);
       throw error;
     }
   };
@@ -50,7 +50,7 @@ export const createGrocery = (name) => {
       const response = await fetch('https://grocery-list-project-cd843-default-rtdb.firebaseio.com/groceries.json', {
         method: 'POST',
         headers: {
-          'Content-type': 'application/json'
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({name})
       });
@@ -58,7 +58,7 @@ export const createGrocery = (name) => {
       const resData = await response.json();
       dispatch(createdGrocery({ id: resData.name, name }));
     } catch (error) {
-      console.log('!!CreateGroceries Error!!', error);
+      console.log('!!Create Groceries Error!!', error);
       throw error;
     }
   };
@@ -72,7 +72,7 @@ export const deleteGrocery = (id) => {
       });
       dispatch(deletedGrocery(id));
     } catch (error) {
-      console.log('!!Delete Groceries Request Error', error);
+      console.log('!!Delete Groceries Error!!', error);
       throw error;
     }
   };

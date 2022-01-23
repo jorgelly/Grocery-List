@@ -1,21 +1,25 @@
 import React, { useState, useEffect, useLayoutEffect, useCallback } from 'react';
-import { StyleSheet, Text, View, ImageBackground, Button, FlatList, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, Button, FlatList, ActivityIndicator } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
+// Separated library components from custom components and imports
 import ModalInput from '../components/ModalInput';
 import InputItems from '../components/InputItems';
 import { deleteGrocery, getGroceries } from '../store/Reducers/GroceryReducer';
 import CustomHeaderButton from '../components/CustomHeaderButton';
 import Colors from '../constants/Colors';
 
+// Start of the Gorcery List Screen Component
 const GroceryListScreen = (props) => {
   const [isModal, setIsModal] = useState(false);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const groceries = useSelector((state) => state.groceries);
   const dispatch = useDispatch();
+  const identifier = 'groceries';
 
+  //Gets items from DB and places them in store
   const getItems = useCallback(async () => {
     setError(null);
     setIsLoading(true);
@@ -31,10 +35,12 @@ const GroceryListScreen = (props) => {
     getItems();
   }, [getItems]);
 
+  //Created this for ease of application
   const setModal = (bool) => {
     setIsModal(bool);
   };
 
+  //Sets + button in header
   const { navigation } = props;
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -54,6 +60,7 @@ const GroceryListScreen = (props) => {
     dispatch(deleteGrocery(itemId));
   };
 
+  //This is a function for the flatlist component
   const renderedItems = (itemData) => {
     return (
       <InputItems
@@ -63,6 +70,7 @@ const GroceryListScreen = (props) => {
     );
   };
 
+  //Added loading and error checks and displays the return value if one or the other is true
   if (error) {
     return (
       <View style={styles.loadingOrError}>
@@ -80,26 +88,26 @@ const GroceryListScreen = (props) => {
     );
   };
 
+  // if loading is false and there is no data in store display the following message
   if (!isLoading && groceries.length === 0) {
     return (
       <View style={styles.loadingOrError}>
-        <ModalInput visible={isModal} setModal={setModal} />
+        <ModalInput visible={isModal} setModal={setModal} idenitifier={identifier} />
         <Text>No Grocery Items. Start adding!</Text>
       </View>
     );
   };
 
+  // Main component View
   return (
     <View style={styles.container}>
-      {/* <ImageBackground style={styles.imageBackground} source={require('../assets/notebookImage.jpeg')}> */}
-      {/* <Button title='Add New Item' onPress={() => setIsModal(true)} /> */}
-        <ModalInput visible={isModal} setModal={setModal} />
-        <FlatList data={groceries} renderItem={renderedItems} />
-      {/* </ImageBackground> */}
+      <ModalInput visible={isModal} setModal={setModal} identifier={identifier} />
+      <FlatList data={groceries} renderItem={renderedItems} />
     </View>
   );
 };
 
+//Styles
 const styles = StyleSheet.create({
   container: {
     flex: 1,
