@@ -99,11 +99,11 @@ const InputItems = (props) => {
       friction={2}
     >
       <ModalInventoryInput visible={isModal} setModal={setModal} identifier={props.identifier} handleDelete={props.handleDelete} item={props.item} swipeRef={swipeableRef} />
-      <TouchableWithoutFeedback style={styles.touchable} onPress={touchHandler}>
-        <View style={styles.listItems}>
-          <Text style={ifTouched}>{props.item.name}</Text>
-        </View>
-      </TouchableWithoutFeedback>
+        <TouchableWithoutFeedback style={styles.touchable} onPress={touchHandler}>
+          <View style={styles.listItems}>
+            <Text style={ifTouched}>{props.item.name}</Text>
+          </View>
+        </TouchableWithoutFeedback>
     </Swipeable>
   );
 };

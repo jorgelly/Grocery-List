@@ -1,5 +1,5 @@
 import React, { useState, useLayoutEffect, useCallback, useEffect } from 'react';
-import { StyleSheet, Text, View, Button, FlatList, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, Button, FlatList, ActivityIndicator, LayoutAnimation } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 
@@ -53,8 +53,21 @@ const RefrigeratorScreen = (props) => {
     });
   }, [navigation]);
 
+  const layoutAnimConfig = {
+    duration: 300,
+    update: {
+      type: LayoutAnimation.Types.easeInEaseOut,
+    },
+    delete: {
+      duration: 100,
+      type: LayoutAnimation.Types.easeInEaseOut,
+      property: LayoutAnimation.Properties.opacity,
+    },
+  };
+
   const deleteHandler = (itemId) => {
     dispatch(deleteFridgeItem(itemId));
+    LayoutAnimation.configureNext(layoutAnimConfig);
   };
 
   //This is a function for the flatlist component
