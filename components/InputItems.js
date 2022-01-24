@@ -1,28 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { StyleSheet, Text, View, TouchableWithoutFeedback, Alert, Animated } from 'react-native';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { RectButton } from 'react-native-gesture-handler';
+import { FontAwesome5 } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 
 import Colors from '../constants/Colors';
-import { backgroundColor } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes';
+import ModalInventoryInput from './ModalInventoryInput';
 
 const InputItems = (props) => {
   const [isPressed, setIsPressed] = useState(false);
+  const [isModal, setIsModal] = useState(false);
+  const swipeableRef = useRef(null);
+
+  const setModal = (bool) => {
+    setIsModal(bool);
+  };
 
   const touchHandler = () => {
     setIsPressed((curVal) => !curVal);
-  };
-
-  const longPressAlert = () => {
-    Alert.alert(
-      'Send or Delete',
-      'Send to inventory OR Delete item.',
-      [
-        { text: 'Send', style: 'default', onPress: () => {} },
-        { text: 'Delete', style: 'destructive', onPress: () => props.handleDelete(props.item.id) },
-        { text: 'Cancel', style: 'cancel' }
-      ]
-    );
   };
 
   const ifTouched = isPressed ? styles.textIfPressed : styles.text;
@@ -34,7 +30,8 @@ const InputItems = (props) => {
     });
     return (
       <View style={styles.renderLeftButton}>
-          <Animated.Text style={[styles.swipeText, {transform: [{translateX: trans}]}]}>Delete</Animated.Text>
+          {/* <Animated.Text style={[styles.swipeText, {transform: [{translateX: trans}]}]}>Delete</Animated.Text> */}
+          <Animated.View style={{transform: [{translateX: trans}]}}><MaterialIcons name="delete-forever" size={28} color="white" /></Animated.View>
       </View>
     );
   };
@@ -46,8 +43,9 @@ const InputItems = (props) => {
     });
     return (
       <Animated.View style={{transform: [{translateX: trans}]}}>
-        <RectButton style={styles.renderRightButton} onPress={() => Alert.alert('Send', 'Sending to Inventory')}>
-          <Text style={styles.swipeText}>Send</Text>
+        <RectButton style={styles.renderRightButton} onPress={() => setModal(true)}>
+          {/* <Text style={styles.swipeText}>Send</Text> */}
+          <MaterialIcons name="send" size={24} color="white" />
         </RectButton>
       </Animated.View>
     )
@@ -56,8 +54,22 @@ const InputItems = (props) => {
   if (props.identifier === 'fridge') {
     const diffDate = new Date(props.item.expiration) - new Date();
     const expDays = Math.round(diffDate / (1000 * 60 * 60 * 24));
+    // If expired show red expiration date
+    const isExpired = (
+      expDays <= 0 ?
+        <Text style={[styles.text, {color: 'red'}]}>{expDays} dys</Text> :
+        <Text style={styles.text}>{expDays} dys</Text>
+    );
+    // If no expiration is used show a placeholder
+    const expirationView = (
+      expDays ?
+        isExpired :
+        // <Text style={[styles.text, {marginRight: 30}]}>__</Text>
+        <FontAwesome5 style={{marginRight: 30}} name="hand-middle-finger" size={24} color={Colors.mainColor} />
+    );
     return (
       <Swipeable
+        ref={swipeableRef}
         renderLeftActions={renderLeft}
         leftThreshold={100}
         renderRightActions={renderRight}
@@ -65,11 +77,11 @@ const InputItems = (props) => {
         overshootFriction={10}
         friction={2}
       >
-      <TouchableWithoutFeedback style={styles.touchable} onPress={touchHandler} onLongPress={longPressAlert}>
+      <TouchableWithoutFeedback style={styles.touchable} onPress={touchHandler}>
         <View style={[styles.listItems, styles.inventoryContainer]}>
           <Text style={styles.text}>{props.item.quantity}</Text>
-          <Text style={styles.text}>{props.item.name}</Text>
-          <Text style={styles.text}>{expDays} days</Text>
+          <Text style={[styles.text, {marginHorizontal: 50}]}>{props.item.name}</Text>
+          {expirationView}
         </View>
       </TouchableWithoutFeedback>
     </Swipeable>
@@ -78,6 +90,7 @@ const InputItems = (props) => {
 
   return (
     <Swipeable
+      ref={swipeableRef}
       renderLeftActions={renderLeft}
       leftThreshold={100}
       renderRightActions={renderRight}
@@ -85,7 +98,8 @@ const InputItems = (props) => {
       overshootFriction={10}
       friction={2}
     >
-      <TouchableWithoutFeedback style={styles.touchable} onPress={touchHandler} onLongPress={longPressAlert}>
+      <ModalInventoryInput visible={isModal} setModal={setModal} identifier={props.identifier} handleDelete={props.handleDelete} item={props.item} swipeRef={swipeableRef} />
+      <TouchableWithoutFeedback style={styles.touchable} onPress={touchHandler}>
         <View style={styles.listItems}>
           <Text style={ifTouched}>{props.item.name}</Text>
         </View>

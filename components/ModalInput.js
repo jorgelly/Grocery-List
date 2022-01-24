@@ -1,9 +1,8 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState } from 'react';
 import { StyleSheet, Text, View, Button, TextInput, Modal, KeyboardAvoidingView, Platform, Alert, Image } from 'react-native';
 import { useDispatch } from 'react-redux';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import NumericInput from 'react-native-numeric-input'
-// import { Picker } from 'react-native-woodpicker'
 
 import { createGrocery } from '../store/Reducers/GroceryReducer';
 import { createFridgeItem } from '../store/Reducers/RefrigeratorReducer';
@@ -15,12 +14,6 @@ const ModalInput = (props) => {
   const [date, setDate] = useState();
   const [open, setOpen] = useState(false);
   const isDate = date ? date.toDateString() : 'Choose an Exp. Date';
-  // const [selectedItem, setSelectedItem] = useState();
-  // const pickerData = [
-  //   { label: 'Fridge', value: 'cold' },
-  //   { label: 'Pantry', value: 'dry' }
-  // ];
-
   const dispatch = useDispatch();
 
   const handleChange = (inputText) => {
@@ -57,8 +50,24 @@ const ModalInput = (props) => {
       keyboardVerticalOffset={50}
       style={[styles.mainContainer, { backgroundColor: '#D1E1FF' }]}
     >
-      <Image style={[styles.image, { marginBottom: 5 }]} source={require('../assets/fridgeIcon.png')} />
-      <View style={{alignItems: 'center', width: '100%'}}>
+      <Image style={styles.image} source={require('../assets/fridgeIcon.png')} />
+      <View style={styles.quantityContainer}>
+        <Text style={{fontFamily: 'open-sans-bold', fontSize: 14}}>Quantity:</Text>
+        <NumericInput
+          value={quantity}
+          initValue={quantity}
+          onChange={(val) => setQuantity(val)}
+          minValue={1}
+          maxValue={10}
+          iconStyle={{color: 'white'}}
+          rounded={true}
+          containerStyle={{backgroundColor: 'white', width: 200}}
+          inputStyle={{width: 120}}
+          rightButtonBackgroundColor={Colors.mainColor}
+          leftButtonBackgroundColor={Colors.mainColor}
+        />
+      </View>
+      <View style={{alignItems: 'center', width: '100%', marginBottom: 20}}>
         <DateTimePickerModal
           isVisible={open}
           date={date}
@@ -80,22 +89,6 @@ const ModalInput = (props) => {
             <Button title='SET EXPIRATION DATE' color={Colors.mainColor} onPress={() => setOpen(true)} />
           </View>}
       </View>
-      <View style={styles.quantityContainer}>
-        <Text style={{fontFamily: 'open-sans-bold', fontSize: 14}}>Quantity:</Text>
-        <NumericInput
-          value={quantity}
-          initValue={quantity}
-          onChange={(val) => setQuantity(val)}
-          minValue={1}
-          maxValue={10}
-          iconStyle={{color: 'white'}}
-          rounded={true}
-          containerStyle={{backgroundColor: 'white', width: 200}}
-          inputStyle={{width: 120}}
-          rightButtonBackgroundColor={Colors.mainColor}
-          leftButtonBackgroundColor={Colors.mainColor}
-        />
-      </View>
       <TextInput
         style={styles.input}
         placeholder='Enter Inventory Item'
@@ -103,17 +96,6 @@ const ModalInput = (props) => {
         onChangeText={handleChange}
         value={enteredValue}
       />
-
-      {/* <View style={styles.pickerContainer}>
-        <Picker
-          item={selectedItem}
-          items={pickerData}
-          onItemChange={setSelectedItem}
-          title='Storage Location'
-          placeholder='Select Storage'
-          isNullable={false}
-        />
-      </View> */}
       <View style={styles.buttonContainer}>
         <View style={styles.button}>
           <Button color={Colors.mainColor} title='SUBMIT' onPress={addHandler}/>
@@ -224,7 +206,7 @@ const styles = StyleSheet.create({
     color: Colors.mainColor
   },
   quantityContainer: {
-    margin: 30,
+    marginVertical: 15,
     justifyContent: 'center',
     shadowColor: 'black',
     shadowOpacity: 0.4,

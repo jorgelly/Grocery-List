@@ -66,6 +66,7 @@ const GroceryListScreen = (props) => {
       <InputItems
         item={itemData.item}
         handleDelete={deleteHandler}
+        identifier={identifier}
       />
     );
   };
@@ -92,7 +93,7 @@ const GroceryListScreen = (props) => {
   if (!isLoading && groceries.length === 0) {
     return (
       <View style={styles.loadingOrError}>
-        <ModalInput visible={isModal} setModal={setModal} idenitifier={identifier} />
+        <ModalInput visible={isModal} setModal={setModal} identifier={identifier} />
         <Text>No Grocery Items. Start adding!</Text>
       </View>
     );
