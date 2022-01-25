@@ -2,7 +2,6 @@ import React, { useState, useEffect, useLayoutEffect, useCallback } from 'react'
 import { StyleSheet, Text, View, Button, FlatList, ActivityIndicator, LayoutAnimation } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
-import * as Notifications from 'expo-notifications';
 
 // Separated library components from custom components and imports
 import ModalInput from '../components/ModalInput';

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { StyleSheet, Text, View, Button, Modal, Alert } from 'react-native';
+import { StyleSheet, Text, View, Button, Modal } from 'react-native';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import NumericInput from 'react-native-numeric-input';
 import { Ionicons } from '@expo/vector-icons';
