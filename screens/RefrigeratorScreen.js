@@ -2,13 +2,13 @@ import React, { useState, useLayoutEffect, useCallback, useEffect } from 'react'
 import { StyleSheet, Text, View, Button, FlatList, ActivityIndicator, LayoutAnimation } from 'react-native';
 import { useSelector, useDispatch } from 'react-redux';
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
+import * as Notifications from 'expo-notifications';
 
 import CustomHeaderButton from '../components/CustomHeaderButton';
 import Colors from '../constants/Colors';
 import ModalInput from '../components/ModalInput';
 import InputItems from '../components/InputItems';
 import { getFridgeItems, deleteFridgeItem } from '../store/Reducers/RefrigeratorReducer';
-import { borderColor } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes';
 
 const RefrigeratorScreen = (props) => {
   const [isModal, setIsModal] = useState(false);
@@ -33,6 +33,35 @@ const RefrigeratorScreen = (props) => {
   useEffect(() => {
     getItems();
   }, [getItems]);
+
+  //!!NOTIFICATION FOR PANTRY SCREEN--------------------------------
+  useEffect(() => {
+    const notificationFunction = async (itemName) => {
+      await Notifications.scheduleNotificationAsync({
+        content: {
+          title: 'Expired Product!',
+          body: `${itemName} is expired in your fridge item list`,
+          vibrate: true
+        },
+        trigger: {
+          seconds: 60 * 2,
+          repeats: true
+        },
+      });
+      //Leave the following if you want to cancel any scheduled notification.
+      // Notifications.cancelAllScheduledNotificationsAsync();
+    };
+    fridgeItems.forEach((item) => {
+      if (item.expiration) {
+        const dateDiff = new Date(item.expiration) - new Date();
+        const dateInDays = Math.round(dateDiff / (1000 * 60 * 60 * 24))
+        if (dateInDays < -3) {
+          notificationFunction(item.name);
+        }
+      };
+    });
+  }, []);
+  //----------------------------------------------------------------------
 
   const setModal = (bool) => {
     setIsModal(bool);
@@ -133,17 +162,10 @@ const styles = StyleSheet.create({
   },
   inventoryContainer: {
     padding: 5,
-    backgroundColor: '#FFFFD0',
     borderRadius: 2,
-    // shadowColor: 'black',
-    // shadowOpacity: 0.4,
-    // shadowOffset: { width: 0, height: 2 },
-    // shadowRadius: 10,
     flexDirection: 'row',
-    backgroundColor: '#D1E1FF',
+    backgroundColor: 'white',
     justifyContent: 'space-between',
-    borderBottomWidth: 0.5,
-    borderColor: Colors.mainColor
   },
   text: {
     fontSize: 22,

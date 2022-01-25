@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import Colors from '../constants/Colors';
 import { createFridgeItem } from '../store/Reducers/RefrigeratorReducer';
+import { createPantryItem } from '../store/Reducers/PantryReducer';
 
 const ModalInventoryInput = (props) => {
   const [quantity, setQuantity] = useState(1);
@@ -26,9 +27,7 @@ const ModalInventoryInput = (props) => {
     if (buttonType === 'fridge') {
       dispatch(createFridgeItem({ name: props.item.name, expiration: date, quantity: quantity }));
     } else if (buttonType === 'pantry') {
-      Alert.alert('Pantry List');
-    } else {
-      Alert.alert('Grocery List')
+      dispatch(createPantryItem({ name: props.item.name, expiration: date, quantity: quantity }));
     }
     setDate();
     setQuantity(1);

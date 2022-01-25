@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { StyleSheet, Text, View, TouchableWithoutFeedback, Alert, Animated } from 'react-native';
+import { useDispatch } from 'react-redux';
+import { StyleSheet, Text, View, TouchableWithoutFeedback, Animated } from 'react-native';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import { RectButton } from 'react-native-gesture-handler';
 import { FontAwesome5 } from '@expo/vector-icons';
@@ -7,14 +8,29 @@ import { MaterialIcons } from '@expo/vector-icons';
 
 import Colors from '../constants/Colors';
 import ModalInventoryInput from './ModalInventoryInput';
+import { createGrocery } from '../store/Reducers/GroceryReducer';
+import { createFridgeItem } from '../store/Reducers/RefrigeratorReducer';
+import { createPantryItem } from '../store/Reducers/PantryReducer';
 
 const InputItems = (props) => {
   const [isPressed, setIsPressed] = useState(false);
   const [isModal, setIsModal] = useState(false);
   const swipeableRef = useRef(null);
+  const dispatch = useDispatch();
 
   const setModal = (bool) => {
     setIsModal(bool);
+  };
+
+  const sendHandler = (buttonName) => {
+    if (buttonName === 'groceryButton') {
+      dispatch(createGrocery(props.item.name));
+    } else if (buttonName === 'pantryButton') {
+      dispatch(createPantryItem(props.item));
+    } else if (buttonName === 'fridgeButton') {
+      dispatch(createFridgeItem(props.item));
+    }
+    props.handleDelete(props.item.id);
   };
 
   const touchHandler = () => {
@@ -30,36 +46,62 @@ const InputItems = (props) => {
     });
     return (
       <View style={styles.renderLeftButton}>
-          {/* <Animated.Text style={[styles.swipeText, {transform: [{translateX: trans}]}]}>Delete</Animated.Text> */}
           <Animated.View style={{transform: [{translateX: trans}]}}><MaterialIcons name="delete-forever" size={28} color="white" /></Animated.View>
       </View>
     );
   };
 
-  const renderRight = (progress, dragX) => {
+  const renderRightAction = (name, color, x, cbParam, callBack, progress, dragX) => {
     const trans = progress.interpolate({
       inputRange: [0, 1],
-      outputRange: [25, 0],
+      outputRange: [x, 0],
     });
+
     return (
-      <Animated.View style={{transform: [{translateX: trans}]}}>
-        <RectButton style={styles.renderRightButton} onPress={() => setModal(true)}>
-          {/* <Text style={styles.swipeText}>Send</Text> */}
-          <MaterialIcons name="send" size={24} color="white" />
+      <Animated.View style={{flex: 1, transform: [{translateX: trans}]}}>
+        <RectButton style={[styles.renderRightButton, {backgroundColor: color}]} onPress={() => callBack(cbParam)}>
+          <MaterialIcons name={name} size={24} color='white' />
         </RectButton>
       </Animated.View>
-    )
+    );
   }
 
-  if (props.identifier === 'fridge') {
+  const renderRight = progress => {
+    if (props.identifier === 'fridge') {
+      return (
+        <View style={{ width: 160, flexDirection: 'row' }}>
+          {renderRightAction('format-list-bulleted', '#6336CB', 160, 'pantryButton', sendHandler, progress)}
+          {renderRightAction('local-grocery-store', 'rgb(74, 135, 249)', 80, 'groceryButton', sendHandler, progress)}
+        </View>
+      );
+    };
+    if (props.identifier === 'pantry') {
+      return (
+        <View style={{ width: 160, flexDirection: 'row' }}>
+          {renderRightAction('kitchen', '#6336CB', 160, 'fridgeButton', sendHandler, progress)}
+          {renderRightAction('local-grocery-store', 'rgb(74, 135, 249)', 80, 'groceryButton', sendHandler, progress)}
+        </View>
+      );
+    };
+    return (
+      <View style={{ width: 100, flexDirection: 'row' }}>
+        {renderRightAction('send', 'rgba(74, 135, 249, 0.8)', 25, true, setModal, progress)}
+      </View>
+    );
+  };
+
+  if (props.identifier === 'fridge' || props.identifier === 'pantry') {
+    const bgColor = props.identifier === 'fridge' ? '#E5F3FE' : '#FFF4EC';
     const diffDate = new Date(props.item.expiration) - new Date();
     const expDays = Math.round(diffDate / (1000 * 60 * 60 * 24));
+
     // If expired show red expiration date
     const isExpired = (
       expDays <= 0 ?
         <Text style={[styles.text, {color: 'red'}]}>{expDays} dys</Text> :
         <Text style={styles.text}>{expDays} dys</Text>
     );
+
     // If no expiration is used show a placeholder
     const expirationView = (
       expDays ?
@@ -78,7 +120,7 @@ const InputItems = (props) => {
         friction={2}
       >
       <TouchableWithoutFeedback style={styles.touchable} onPress={touchHandler}>
-        <View style={[styles.listItems, styles.inventoryContainer]}>
+        <View style={[styles.listItems, styles.inventoryContainer, {backgroundColor: bgColor}]}>
           <Text style={styles.text}>{props.item.quantity}</Text>
           <Text style={[styles.text, {marginHorizontal: 50}]}>{props.item.name}</Text>
           {expirationView}
@@ -157,13 +199,10 @@ const styles = StyleSheet.create({
     marginVertical: 1,
     borderRadius: 2,
     padding: 20,
-    backgroundColor: 'rgba(74,135, 249, 0.8)',
-    width: 100,
     alignItems: 'center'
   },
   inventoryContainer: {
     flexDirection: 'row',
-    backgroundColor: '#D1E1FF',
     justifyContent: 'space-between',
   }
 });

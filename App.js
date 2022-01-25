@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,6 +7,7 @@ import store from './store/Store';
 import { enableScreens } from 'react-native-screens';
 import * as Font from 'expo-font';
 import AppLoading from 'expo-app-loading';
+import * as Notifications from 'expo-notifications'
 
 import PantryScreen from './screens/PantryScreen';
 import RefrigeratorScreen from './screens/RefrigeratorScreen';
@@ -25,8 +26,49 @@ const fetchFonts = () => {
   });
 };
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+  }),
+});
+
 export default function App() {
   const [fontLoaded, setFontLoaded] = useState(false);
+
+  useEffect(() => {
+    const allowsNotificationsAsync = async () => {
+      const settings = await Notifications.getPermissionsAsync();
+      if (settings.status !== 'granted') {
+        return await Notifications.requestPermissionsAsync({
+          ios: {
+            allowAlert: true,
+            allowBadge: true,
+            allowSound: true,
+            allowAnnouncements: true,
+          },
+        });
+      };
+      if (settings.status !== 'granted') return
+    }
+    allowsNotificationsAsync();
+  }, []);
+
+  useEffect(() => {
+    const backgroundSubscription = Notifications.addNotificationResponseReceivedListener(async response => {
+      // console.log(response);
+      const id = response.notification.request.identifier
+      await Notifications.cancelScheduledNotificationAsync(id);
+    });
+
+    const foregroundSubscription = Notifications.addNotificationReceivedListener(notification => {
+      // console.log(notification);
+    });
+    return () => {
+      foregroundSubscription.remove();
+      backgroundSubscription.remove();
+    };
+  }, []);
 
   if (!fontLoaded) {
     return (

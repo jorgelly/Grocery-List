@@ -6,6 +6,7 @@ import NumericInput from 'react-native-numeric-input'
 
 import { createGrocery } from '../store/Reducers/GroceryReducer';
 import { createFridgeItem } from '../store/Reducers/RefrigeratorReducer';
+import { createPantryItem } from '../store/Reducers/PantryReducer';
 import Colors from '../constants/Colors.js';
 
 const ModalInput = (props) => {
@@ -35,6 +36,11 @@ const ModalInput = (props) => {
         setEnteredValue('');
         setDate();
         setQuantity(1);
+      } else if (props.identifier === 'pantry') {
+        dispatch(createPantryItem({ name: enteredValue, expiration: date, quantity: quantity }))
+        setEnteredValue('');
+        setDate();
+        setQuantity(1);
       } else {
         dispatch(createGrocery(enteredValue));
         setEnteredValue('');
@@ -42,15 +48,17 @@ const ModalInput = (props) => {
     };
   };
 
-  if (props.identifier === 'fridge') {
+  if (props.identifier === 'fridge' || props.identifier === 'pantry') {
+    const bgColor = props.identifier === 'fridge' ? '#E5F3FE' : '#FFF4EC';
+    const imageSource = props.identifier === 'fridge' ? require('../assets/fridgeIcon.png') : require('../assets/pantryIcon.png');
     return (
     <Modal visible={props.visible} animationType='slide' >
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       keyboardVerticalOffset={50}
-      style={[styles.mainContainer, { backgroundColor: '#D1E1FF' }]}
+      style={[styles.mainContainer, { backgroundColor: bgColor }]}
     >
-      <Image style={styles.image} source={require('../assets/fridgeIcon.png')} />
+      <Image style={styles.image} source={imageSource} />
       <View style={styles.quantityContainer}>
         <Text style={{fontFamily: 'open-sans-bold', fontSize: 14}}>Quantity:</Text>
         <NumericInput
